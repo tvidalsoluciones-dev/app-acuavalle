@@ -296,6 +296,23 @@
             }
         }
 
+        // Coordenadas de PTAP Potrerito (Aproximadas)
+        const PTAP_LAT = 3.23333;
+        const PTAP_LON = -76.58338;
+        const RADIO_PERMITIDO_KM = 0.5; // 500 metros de tolerancia
+
+        // Fórmula de Haversine para calcular distancia entre dos coordenadas GPS
+        function calcularDistancia(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radio de la Tierra en km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
         function generarReporte() {
             document.getElementById('btn-generar').style.display = 'none';
             document.getElementById('loading-text').style.display = 'block';
@@ -306,17 +323,32 @@
                     (position) => {
                         const lat = position.coords.latitude;
                         const lon = position.coords.longitude;
+                        
+                        // Validar Geocerca
+                        const distancia = calcularDistancia(lat, lon, PTAP_LAT, PTAP_LON);
+                        
+                        if (distancia > RADIO_PERMITIDO_KM) {
+                            alert(`⛔ ACCESO DENEGADO ⛔\n\nEl sistema de seguridad detecta que estás a ${distancia.toFixed(2)} km de la planta.\n\nDebes estar físicamente dentro del perímetro de la PTAP Potrerito para poder generar el reporte de jornada.`);
+                            document.getElementById('btn-generar').style.display = 'flex';
+                            document.getElementById('loading-text').style.display = 'none';
+                            return; // Bloquea el envío
+                        }
+
+                        // Si está cerca, permitir el envío
                         const mapsLink = `https://maps.google.com/?q=${lat},${lon}`;
                         enviarMensaje(mapsLink);
                     },
                     (error) => {
-                        console.warn("GPS denegado o sin señal", error);
-                        enviarMensaje("⚠️ GPS denegado por el dispositivo. Adjuntar ubicación manualmente.");
+                        alert("⚠️ GPS DENEGADO\n\nPara poder generar el reporte debes permitir el acceso a tu ubicación GPS cuando el navegador lo solicite.");
+                        document.getElementById('btn-generar').style.display = 'flex';
+                        document.getElementById('loading-text').style.display = 'none';
                     },
                     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                 );
             } else {
-                enviarMensaje("⚠️ Dispositivo no soporta captura GPS automática.");
+                alert("⚠️ Dispositivo no soporta captura GPS automática.");
+                document.getElementById('btn-generar').style.display = 'flex';
+                document.getElementById('loading-text').style.display = 'none';
             }
         }
 
