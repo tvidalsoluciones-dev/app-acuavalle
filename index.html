@@ -327,12 +327,14 @@
                         // Validar Geocerca
                         const distancia = calcularDistancia(lat, lon, PTAP_LAT, PTAP_LON);
                         
+                        /* === DESACTIVADO TEMPORALMENTE PARA PRUEBAS ===
                         if (distancia > RADIO_PERMITIDO_KM) {
                             alert(`⛔ ACCESO DENEGADO ⛔\n\nEl sistema de seguridad detecta que estás a ${distancia.toFixed(2)} km de la planta.\n\nDebes estar físicamente dentro del perímetro de la PTAP Potrerito para poder generar el reporte de jornada.`);
                             document.getElementById('btn-generar').style.display = 'flex';
                             document.getElementById('loading-text').style.display = 'none';
                             return; // Bloquea el envío
                         }
+                        ================================================= */
 
                         // Si está cerca, permitir el envío
                         const mapsLink = `https://maps.google.com/?q=${lat},${lon}`;
