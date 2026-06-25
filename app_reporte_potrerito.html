@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APP REPORTE - PTAP Jamundí</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at top right, #1e3a8a 0%, transparent 40%),
+                              radial-gradient(circle at bottom left, #064e3b 0%, transparent 40%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 15px 40px 15px;
+        }
+
+        .app-header {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            margin-bottom: 25px;
+            padding-top: 20px;
+        }
+
+        .app-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: -webkit-linear-gradient(45deg, #60a5fa, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .app-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        /* Type Selector */
+        .type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .type-btn {
+            flex: 1;
+            padding: 15px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text-muted);
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .type-btn.active.ingreso {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .type-btn.active.salida {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .type-icon { font-size: 1.5rem; }
+
+        /* Inputs */
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 15px;
+            border-radius: 14px;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: var(--accent);
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Checkboxes for Team */
+        .team-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .team-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+        }
+
+        .team-check input {
+            accent-color: var(--accent);
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Dynamic sections */
+        #tareas-section { display: none; }
+
+        /* Button */
+        .btn-wa {
+            width: 100%;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 18px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 25px -5px rgba(37, 211, 102, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-wa:active {
+            transform: scale(0.98);
+        }
+        
+        #loading-text {
+            display: none;
+            text-align: center;
+            color: var(--warning);
+            font-size: 0.85rem;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <h1>PTAP POTRERITO</h1>
+        <p>Bitácora Diaria de Automatización</p>
+    </header>
+
+    <main class="container">
+        
+        <div class="card">
+            <span class="section-title">Tipo de Reporte</span>
+            <div class="type-selector">
+                <button class="type-btn active ingreso" id="btn-ingreso" onclick="setType('ingreso')">
+                    <span class="type-icon">📥</span>
+                    CHECK-IN
+                </button>
+                <button class="type-btn salida" id="btn-salida" onclick="setType('salida')">
+                    <span class="type-icon">📤</span>
+                    CHECK-OUT
+                </button>
+            </div>
+
+            <div class="input-group">
+                <label>Personal en Sitio</label>
+                <div class="team-grid">
+                    <label class="team-check"><input type="checkbox" id="tec1" checked> Técnico Líder</label>
+                    <label class="team-check"><input type="checkbox" id="tec2" checked> Auxiliar</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="tareas-section">
+            <span class="section-title">Resumen de la Jornada</span>
+            <div class="input-group">
+                <label>Equipos Intervenidos / Actividades</label>
+                <textarea id="actividades" placeholder="Ej: Empalme de 4 actuadores Bernard en Filtro 9..."></textarea>
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="section-title">Novedades / Tiempos Muertos</span>
+            <div class="input-group">
+                <textarea id="novedades" placeholder="Sin novedades. (O indique si hubo esperas por obras civiles, falta de energía, etc.)"></textarea>
+            </div>
+        </div>
+
+        <button class="btn-wa" id="btn-generar" onclick="generarReporte()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12.01 2.014a10.01 10.01 0 00-8.48 15.34L2 22l4.8-1.5a10.01 10.01 0 105.21-18.486zm0 18.26a8.23 8.23 0 01-4.2-1.15l-.3-.18-3.13.98.84-3.05-.2-.3A8.24 8.24 0 1112.01 20.27zm4.52-6.17c-.25-.13-1.48-.73-1.71-.82-.23-.08-.4-.12-.57.12-.17.25-.64.82-.78.98-.15.17-.29.19-.54.06-1.05-.52-1.92-1.07-2.65-2.07-.15-.21-.02-.32.1-.45.12-.11.25-.29.38-.44.12-.15.16-.25.24-.42.08-.17.04-.32-.02-.45-.06-.13-.57-1.38-.78-1.89-.2-.5-.41-.43-.57-.44h-.48c-.17 0-.44.06-.67.32-.23.25-.88.86-.88 2.1s.9 2.43 1.03 2.6c.13.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.48-.6 1.69-1.19.21-.58.21-1.07.15-1.18-.06-.11-.23-.17-.48-.3z"/></svg>
+            GENERAR WHATSAPP CON GPS
+        </button>
+        <p id="loading-text">Capturando satélites GPS... por favor espere.</p>
+
+    </main>
+
+    <script>
+        let currentType = 'ingreso';
+
+        function setType(type) {
+            currentType = type;
+            document.getElementById('btn-ingreso').classList.remove('active');
+            document.getElementById('btn-salida').classList.remove('active');
+            document.getElementById('btn-' + type).classList.add('active');
+
+            if(type === 'salida') {
+                document.getElementById('tareas-section').style.display = 'block';
+            } else {
+                document.getElementById('tareas-section').style.display = 'none';
+            }
+        }
+
+        function generarReporte() {
+            document.getElementById('btn-generar').style.display = 'none';
+            document.getElementById('loading-text').style.display = 'block';
+
+            // INTENTAR OBTENER GPS AUTOMÁTICO
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        const mapsLink = `https://maps.google.com/?q=${lat},${lon}`;
+                        enviarMensaje(mapsLink);
+                    },
+                    (error) => {
+                        console.warn("GPS denegado o sin señal", error);
+                        enviarMensaje("⚠️ GPS denegado por el dispositivo. Adjuntar ubicación manualmente.");
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            } else {
+                enviarMensaje("⚠️ Dispositivo no soporta captura GPS automática.");
+            }
+        }
+
+        function enviarMensaje(gpsStatus) {
+            document.getElementById('btn-generar').style.display = 'flex';
+            document.getElementById('loading-text').style.display = 'none';
+
+            // Recopilar datos
+            const fecha = new Date().toLocaleDateString('es-CO');
+            const hora = new Date().toLocaleTimeString('es-CO', {hour: '2-digit', minute:'2-digit'});
+            
+            let equipo = [];
+            if(document.getElementById('tec1').checked) equipo.push("Técnico Líder");
+            if(document.getElementById('tec2').checked) equipo.push("Auxiliar");
+            const equipoTxt = equipo.length > 0 ? equipo.join(", ") : "Ninguno seleccionado";
+
+            const novedades = document.getElementById('novedades').value || "Ninguna novedad reportada.";
+            const actividades = document.getElementById('actividades').value || "No se detallaron actividades.";
+
+            // Construir mensaje
+            let msg = ``;
+            if (currentType === 'ingreso') {
+                msg += `📥 *CHECK-IN - INICIO DE JORNADA*\n`;
+                msg += `📍 *Proyecto:* PTAP Potrerito\n`;
+                msg += `📅 *Fecha:* ${fecha}\n`;
+                msg += `⏰ *Hora de Sistema:* ${hora}\n`;
+                msg += `🛰️ *Validación GPS:* ${gpsStatus}\n\n`;
+                msg += `👷‍♂️ *Personal en sitio:* ${equipoTxt}\n\n`;
+                msg += `⚠️ *Novedades de inicio:* ${novedades}\n\n`;
+                msg += `_*(Favor adjuntar fotografía del frente de trabajo)*_`;
+            } else {
+                msg += `📤 *CHECK-OUT - FIN DE JORNADA*\n`;
+                msg += `📍 *Proyecto:* PTAP Potrerito\n`;
+                msg += `📅 *Fecha:* ${fecha}\n`;
+                msg += `⏰ *Hora de Sistema:* ${hora}\n`;
+                msg += `🛰️ *Validación GPS:* ${gpsStatus}\n\n`;
+                msg += `👷‍♂️ *Personal retirándose:* ${equipoTxt}\n\n`;
+                msg += `✅ *Resumen de Ejecución:*\n${actividades}\n\n`;
+                msg += `⚠️ *Tiempos Muertos / Novedades:*\n${novedades}\n\n`;
+                msg += `_*(Favor adjuntar fotografía del estado final)*_`;
+            }
+
+            // Enviar a WhatsApp
+            window.location.href = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        }
+    </script>
+</body>
+</html>
